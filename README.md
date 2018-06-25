@@ -21,7 +21,7 @@ Users are asked to take a quick 10 question survey, which in turn is matched up 
 
 ## Deployment:
 
-https://nakrap.github.io/trainScheduler/
+https://morning-chamber-55227.herokuapp.com/
 
 
 ## Built With:
