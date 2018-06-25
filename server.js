@@ -1,3 +1,4 @@
+
 // Dependencies
 // =============================================================
 var express = require("express");
@@ -19,7 +20,7 @@ app.use(bodyParser.json());
 require("./app/routing/apiRoutes")(app);
 require("./app/routing/htmlRoutes")(app);
 
-// The below code effectively "starts" our server
+// This code "starts" our server
 // =============================================================
 app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);

@@ -1,7 +1,6 @@
-// * A GET route with the url `/api/friends`. This will be used to display a JSON of all possible friends.
-// * A POST routes `/api/friends`. This will be used to handle incoming survey results. 
-// This route will also be used to handle the compatibility logic.
 
+// Requirement:
+// ---------------------------------------------------------------------------
 var userData = require("../data/friends");
 
 
@@ -10,60 +9,49 @@ var userData = require("../data/friends");
 
 module.exports = function(app) {
   
-// API GET Requests
-// ---------------------------------------------------------------------------
+    // API GET Requests
+    // ---------------------------------------------------------------------------
+    app.get("/api/friends", function(req, res) {
+        res.json(userData);
+    });
 
-app.get("/api/friends", function(req, res) {
-    res.json(userData);
-});
-
-
-var comparisonUserTotalScore = 0;
-
-var friendScores = [];
+    // Variables set up for our logic
+    var comparisonScore = 0;
+    var friendScores = [];
 
 
-// API POST Requests
-// ---------------------------------------------------------------------------
+    // API POST Requests
+    // ---------------------------------------------------------------------------
+    app.post("/api/friends", function(req, res) {
 
-app.post("/api/friends", function(req, res) {
+        // Store current user scores in array.
+        var currentUserScores = req.body.scores;
+        
+            // Loop through all userData, and calculate differences in scores.
+            for (var i = 0; i < userData.length; i++) {
 
-    // Store current user scores in array.
-    var currentUserScores = req.body.scores;
+            var otherUserScore = userData[i].scores;
 
-    console.log("Current user scores: " + currentUserScores);
+            comparisonScore = calculation(currentUserScores, otherUserScore);
+            friendScores.push(comparisonScore);
 
-    // Determine the user's most compatible friend.
-    for (var i = 0; i < userData.length; i++) {
+            }
 
-      // Convert each user's results in to an array of numbers.
-      var comparisonUserScores = userData[i].scores;
-
-      // Find total difference between current user and each user.
-      comparisonUserTotalScore = calculateUserCompatibilityScore(currentUserScores, comparisonUserScores);
-
-      // Build up array of user compatibility scores.
-      friendScores.push(comparisonUserTotalScore);
-
-    }
-
-    console.log("Array of friend scores: " + friendScores);
 
     var index = 0;
     var value = friendScores[0];
 
-    // Need to get index of lowest score.
-    // Tried to use Math.min and it return NaN.
-    // So went with tried and true vanilla.
-    for (var i = 0; i < friendScores.length; i++) {
-      console.log("Value of item in array: " + friendScores[i]);
-      if (friendScores[i] < value) {
-        value = friendScores[i];
-        index = i;
-      }
-    }
+        for (var i = 0; i < friendScores.length; i++) {
+            
+            if (friendScores[i] < value) {
 
-    // OMG we are getting a best friend.
+                value = friendScores[i];
+
+                index = i;
+            }
+        }
+
+    // Choose the comparison scores with the least difference between scores.
     console.log("Best friend name: " + userData[index].name);
 
     // Send best friend as a response so we can display in modal.
@@ -74,23 +62,24 @@ app.post("/api/friends", function(req, res) {
 
   });
 };
+// ===============================================================================
 
-var totalDifference = 0;
 
-// Find total difference between current user and another user.
-function calculateUserCompatibilityScore(currentUserScores, comparisonUserScores) {
+    var difference = 0;
 
-  // Reset the total difference counter each time function called.
-  totalDifference = 0;
+// Find total difference between current user and other user.
+function calculation(currentUserScores, otherUserScore) {
+  
+    // Reset the difference total whenever function called.
+    difference = 0;
+    
+    for (var i = 0; i < currentUserScores.length; i++) {
 
-  for (var i = 0; i < currentUserScores.length; i++) {
+        difference += Math.abs(currentUserScores[i] - otherUserScore[i]);
+        
+    }
 
-    totalDifference+=Math.abs(currentUserScores[i] - comparisonUserScores[i]);
-  }
-
-  console.log("Final total difference for friend: " + totalDifference);
-
-  return totalDifference;
+    return difference;
  
 
 app.post("/api/clear", function() {
