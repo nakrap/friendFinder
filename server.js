@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 
 // The below points our server to a series of "route" files.
 // =============================================================
-require("./routes/apiRoutes")(app);
-require("./routes/htmlRoutes")(app);
+require("./app/routing/apiRoutes")(app);
+require("./app/routing/htmlRoutes")(app);
 
 // The below code effectively "starts" our server
 // =============================================================
